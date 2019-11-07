@@ -125,3 +125,50 @@ sudo shutdown -h +15 "Going down for emergency repair"
 
 `reboot` is identical to halt but causes machine to reboot instead of halting.
 
+### Access Control and Rootly Powers
+
+#### File ownership
+Files can have both user and group ownership. To check a file ownership, we can run `ls -l $filename`:
+
+```bash
+kobbigal⚡️$ ls -l README.md
+-rw-r--r--@ 1 kobbigal  staff  4730 Nov  6 17:30 README.md
+```
+
+UIDs are mapped in `/etc/passwd` while GIDs are mapped in `/etc/group`. `/etc/shadow` stores the passwords.
+
+#### Process ownership
+
+Process owner can send process signals and reduce the process' scheduling priority.
+Processes have a few different identities associated to them:
+* Real, effective, saved UID
+* Real, effective, saved GID
+* Filesystem UID that is used to determine file access permissions.
+
+#### root
+
+UID 0.
+Can perform any valid operation on any file or process.
+
+#### Role-based access control (RBAC)
+
+In modern UNIX systems, users are assigned to roles that have certain defined permissions.
+
+#### `su` - subtitute user identity
+
+The `su` command, if run without arguments, will create a shell run as root. You can also log in as another user (if you have their password) by running `su - $username`. The dash indicates that the shell will be run in login mode. `su` is located in `/usr/bin/su` or `/bin/su`.
+
+#### `sudo` - limited `su`
+
+Appedning `sudo` to any command will attempt to run the command as the superuser. `sudo` consults the file `/etc/sudoers` lists the users who are authorized to use the `sudo` command and the list of commands they're allowed to run on the host. After inserting the correct `sudo` password, a 5-minute timer will open where the user will not need to insert a password.
+
+`sudo` keeps a log of the commands that were executed. The following information is saved:
+
+* Commands executed.
+* The hosts which the command were run on.
+* The directory from which they were run.
+* Time which the command was run.
+
+Use `syslog` to check this information.
+
+To modify `/etc/sudoers`, you use `visudo` command.
