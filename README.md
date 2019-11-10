@@ -160,7 +160,7 @@ The `su` command, if run without arguments, will create a shell run as root. You
 
 #### `sudo` - limited `su`
 
-Appedning `sudo` to any command will attempt to run the command as the superuser. `sudo` consults the file `/etc/sudoers` lists the users who are authorized to use the `sudo` command and the list of commands they're allowed to run on the host. After inserting the correct `sudo` password, a 5-minute timer will open where the user will not need to insert a password.
+Appending `sudo` to any command will attempt to run the command as the superuser. `sudo` consults the file `/etc/sudoers` lists the users who are authorized to use the `sudo` command and the list of commands they're allowed to run on the host. After inserting the correct `sudo` password, a 5-minute timer will open where the user will not need to insert a password.
 
 `sudo` keeps a log of the commands that were executed. The following information is saved:
 
@@ -172,3 +172,44 @@ Appedning `sudo` to any command will attempt to run the command as the superuser
 Use `syslog` to check this information.
 
 To modify `/etc/sudoers`, you use `visudo` command.
+
+
+### Processes
+
+Processes in UNIX consist of:
+
+1) Address space (set of memory pages - units in which memory is managed.) It contains among other things:
+
+	* Code and libraries that the process is executing.
+	* Variables.
+	* Stack.
+
+2) A set of data structures within the kernel. These structures record:
+
+	* Prcoess address space map.
+	* Current status of process (sleeping, stopped, etc.)
+	* Execution priority of process.
+	* Information about the resources the process has used.
+	* Information about the files and network ports the process has opened.
+	* Process' signal mask (a record of which signals are blocked.)
+	* Owner of the process.
+
+#### Process Attributes
+
+* **PID** - Kernel assigns a unique ID to every process. In newer versions of the kernel (2.6.24), processes with the same PID can run concurrently in different namespaces (to support containerization).
+
+* **PPID** (Parent PID) - An existing process clones itself to create a new process. The clone can then exchange the program it's running for a different one. 
+When a process is cloned, the original process is referred to as the parent. PPID of a process is the PID of the parent from which it was cloned. If the parent dies, `init` (PID 1) becomes the parent.
+
+* **UUID** and **EUID** - Process' UID is the copy of the UID of the parent process. The EUID is the 'effective' user ID which is an extra UID used to determine what resources and files a process has permission to access. For most processes, UUID = EUID.
+
+* **GID** and **EGID** - Process' GID is the group identification number of the process. The only time which GID is relevant is when a process creates new files where new files may adopt the GID of the creating process.
+
+* **Niceness** - How 'nice' you are to the other users of the system.
+
+* **Control Terminal** - Control terminal determines default linkages for the `stdin`, `stdout` and `stderr`.
+
+#### Lifecycle of a Process
+
+To create a new process, a process copies itself with the `fork` system call. `fork` creates a copy of the original process (almost identical). The new process has a distinct PID. `fork` returns 2 different values. 
+
