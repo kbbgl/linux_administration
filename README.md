@@ -211,5 +211,10 @@ When a process is cloned, the original process is referred to as the parent. PPI
 
 #### Lifecycle of a Process
 
-To create a new process, a process copies itself with the `fork` system call. `fork` creates a copy of the original process (almost identical). The new process has a distinct PID. `fork` returns 2 different values. 
+To create a new process, a process copies itself with the `fork` system call. `fork` creates a copy of the original process (almost identical). The new process has a distinct PID. `fork` returns 2 different values. The child returns 0 and the parent receives the PID of the newly-created child. Each copy of the process needs to examine the return value to verify their role.
 
+After the `fork`, the child process will use one of the `exec` commands to execute the new program.
+
+As we discussed, `init` is the parent process with PID 1 which installed automatically by the kernel when the system boots.
+
+![](http://3.bp.blogspot.com/-DHWNQNvLWsc/U_1RD60lDBI/AAAAAAAAAhA/1YaNoo5re8Q/s1600/process-life-cycle.gif)
