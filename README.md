@@ -205,7 +205,12 @@ When a process is cloned, the original process is referred to as the parent. PPI
 
 * **GID** and **EGID** - Process' GID is the group identification number of the process. The only time which GID is relevant is when a process creates new files where new files may adopt the GID of the creating process.
 
-* **Niceness** - How 'nice' you are to the other users of the system.
+* **Niceness** - How 'nice' you are to the other users of the system. Range is -20 to +19. High value means you're very nice to other users of the system therefore you receive lower scheduling priority. To set the niceness value:
+
+`nice -n 5 ~/bin/longtask` - lowers priority by 5.
+`renice -5 8829` - sets nice value to -5
+
+`nice` is **not** built into `bash`.
 
 * **Control Terminal** - Control terminal determines default linkages for the `stdin`, `stdout` and `stderr`.
 
@@ -215,6 +220,45 @@ To create a new process, a process copies itself with the `fork` system call. `f
 
 After the `fork`, the child process will use one of the `exec` commands to execute the new program.
 
-As we discussed, `init` is the parent process with PID 1 which installed automatically by the kernel when the system boots.
+As we discussed, `init` is the parent process with PID 1 which installed automatically by the kernel when the system boots. But it also plays a role in process management.
+When a process completes execution, it calls `_exit` to notify the kernel it is ready to die and supplies an exit code. The kernel requires that its death be acknowledged by the process' parent which the parent does with a call to `wait` - wait for the process to change state. The parent receives a copy of the child's exit code, the summary of the process resource consumption. If the parent dies before the child, no call to `wait` is necessary and the orphaned child's parent becomes `init`.
 
 ![](http://3.bp.blogspot.com/-DHWNQNvLWsc/U_1RD60lDBI/AAAAAAAAAhA/1YaNoo5re8Q/s1600/process-life-cycle.gif)
+
+
+#### Signals
+
+Signals are process-level interrupt requests. Signals can be sent to processes, between processes and from different origins (kernel, user, terminal).
+
+When a signal is received, either the process receiving the signal has a specific handler ('catching' the signal) for a specific signal or the kernel takes a default action on behalf of the process.
+
+For a list of different signals, see `/usr/include/signal.h` or `man signal`.
+
+
+#### Process States
+
+* Runnable - the process can be executed whenever CPU time is available. It has all the resources it needs and just waiting for the CPU to process its data.
+* Sleeping - The process is waiting for some resource. When a process is awaiting a system call that cannot be executed immediately, the process state changes to this status.
+* Zombie   - The process is trying to die.
+* Stopped - The process is suspended (not allowed to execute)
+
+#### Monitor Processes
+
+`ps` is a tool that returns some useful information:
+
+* PID
+* UID
+* Control terminal of processes
+* How much memory a process is using
+* How much CPU time it consumed
+* Current status (zombies show up as `exiting` or `defunct`)
+
+Popular way to run `ps aux` or `ps lax`.
+Commands with brackets (`[kjournald]`) are kernel threads scheduled as processes.
+
+`top|htop` is a tool that provides regularly updated summary of active processes and resources.
+
+
+#### `/proc` Filesystem
+
+`ps|top` read the process status information from the `/proc` directory. It includes information that is not available when using `vmstat|top`. For more information run `man proc`.
