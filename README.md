@@ -258,7 +258,20 @@ Commands with brackets (`[kjournald]`) are kernel threads scheduled as processes
 
 `top|htop` is a tool that provides regularly updated summary of active processes and resources.
 
+To get the full memory consumption (both virtual and resident set) of a process, when `top` is running, press `f` and choose the `DATA` column.
+
 
 #### `/proc` Filesystem
 
 `ps|top` read the process status information from the `/proc` directory. It includes information that is not available when using `vmstat|top`. For more information run `man proc`.
+
+
+#### Trace Signals and System Calls
+
+We can attach to a running process to see its output by using `strace`. It will show the process system calls and the return code for each. We can use the `-f` flag to look for forked processes and `-e file` to display only file operations.
+
+
+#### Runaway Processes
+
+Processes that consume too many resources and usually cause performance issues.
+Runaway processes that produce output can fill up an entire filesystem. To check for this, run `df -k` and check for filesystems with 100% utilization. Then use the `du` command on that filesystem to find which directory is using the most space. `fuser` and `lsof` commands can also be useful to debug.
