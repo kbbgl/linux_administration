@@ -275,3 +275,22 @@ We can attach to a running process to see its output by using `strace`. It will 
 
 Processes that consume too many resources and usually cause performance issues.
 Runaway processes that produce output can fill up an entire filesystem. To check for this, run `df -k` and check for filesystems with 100% utilization. Then use the `du` command on that filesystem to find which directory is using the most space. `fuser` and `lsof` commands can also be useful to debug.
+
+
+### Filesystem
+
+In UNIX, everything is a file. Examples include processes, audio devices, kernel data structures and more.
+
+The filesystem is comprised by:
+* A namespace - a way to name things and organize them in a hierarchy.
+* An API - set of system calls for navigating/manipulating objects.
+* A security model - a scheme for protecting, hiding, and sharing things.
+* An implementation - software to bind the logical model to the hardware.
+
+There are many different filesystem implementations. Some are disk-based, some network based (e.g. NFS), some are foreign filesystems from other OS (NTFS, FAT for Windows).
+
+#### Paths
+
+`/` is the root directory. 
+
+Pathnames can be absolute (`/tmp/foo`) or relative (`some_path/some_path2`). Relative paths are interpreted starting at the current directory (run `pwd` to check the current directory.)
